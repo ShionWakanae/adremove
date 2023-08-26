@@ -30,7 +30,7 @@ if len(sys.argv) < 2:
     print("Select a model option file to view/edit:")
     print()
     for lm in m:
-        print(lm+" = "+m[lm])
+        print(lm+". "+m[lm])
     print()
 
     key = input("Please input ID: ")
@@ -53,19 +53,47 @@ MOption = pickle.loads(MContent)
 
 isModified = False
 
+key = input("Please enter 'Y' to delete all loss history and previews: ")
+if key.upper() == 'Y':
+    print("Clearing all loss history.")
+    MOption['loss_history'].clear()
+    isModified = True
+
+print()
+key = input("Please enter 'Y' to delete sample previews: ")
+if key.upper() == 'Y':
+    print("Clearing all previews.")
+    MOption['sample_for_preview'].clear()
+    isModified = True
+
+print()
+key = input("Please enter 'Y' to reset iteration to 1: ")
+if key.upper() == 'Y':
+    print("Resetting iteration to 1.")
+    MOption['iter'] = 1
+    isModified = True
+
+print()
+print("Press any key to next step...")
+input()
+
 while True:
     # 打印全部参数，格式不易查看
     # print(MOption['options'])
 
     # 分行逐个打印参数。
     os.system('cls') 
-    print("*** ["+DFLModelOptionF+"] ***")
-    print("*** List Params in this model start ***")
+    print("["+DFLModelOptionF+"]")
     print()
+    print(str(" model info ").center(53,"*"))
+    print()
+    print(str("iteration").rjust(25), "=" , str(MOption['iter']).ljust(15))
+    print()
+    print(str(" model params ").center(53,"*"))
     for oneOp in MOption['options']:
-        print(str(oneOp).ljust(25), "=" , str(MOption['options'][oneOp]).ljust(15), type(MOption['options'][oneOp]))
+        print(str(oneOp).rjust(25), "=" , str(MOption['options'][oneOp]).ljust(15)) #, type(MOption['options'][oneOp]))
     print()
-    print("*** List Params in this model end ***")
+    print(str("*******").center(53,"*"))
     print()
 
     key=''
@@ -75,6 +103,8 @@ while True:
     key = input("Please input param name: ")
     if key == 'quit' or key =='\26':
         break
+    elif key.strip() == '':
+        continue
     else:
         content = input("Please input param value: ")
         print()
@@ -86,23 +116,21 @@ while True:
             intcontent = int(content)
             MOption['options'][key] = intcontent
             print(key+" is set to INTEGER value =",intcontent)
-            input()
         except:
             try:
                 fcontent = float(content)
                 MOption['options'][key] = fcontent
                 print(key+" is set to FLOAT value =",fcontent)
-                input()
             except:
                 try:
                     bcontent = bool(strtobool(content))
                     MOption['options'][key] = bcontent
                     print(key+" is set to BOOL value =",bcontent)
-                    input()
                 except:
                     MOption['options'][key] = content
                     print(key+" is set to STRING value =",content)
-                    input()
+        print("Press any key to choose param...")
+        input()
         isModified = True
 
 if isModified:
