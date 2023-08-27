@@ -2,6 +2,7 @@ from distutils.util import strtobool
 import os
 import pickle
 from pathlib import Path
+import platform
 import sys
 
 print()
@@ -53,25 +54,20 @@ MOption = pickle.loads(MContent)
 
 isModified = False
 
-key = input("Please enter 'Y' to delete all loss history and previews: ")
+key = input("Please enter 'Y' to delete loss history and set iteration to 1: ")
 if key.upper() == 'Y':
-    print("Clearing all loss history.")
+    print("Clearing loss history.")
     MOption['loss_history'].clear()
-    isModified = True
-
-print()
-key = input("Please enter 'Y' to delete sample previews: ")
-if key.upper() == 'Y':
-    print("Clearing all previews.")
-    MOption['sample_for_preview'].clear()
-    isModified = True
-
-print()
-key = input("Please enter 'Y' to reset iteration to 1: ")
-if key.upper() == 'Y':
     print("Resetting iteration to 1.")
     MOption['iter'] = 1
     isModified = True
+
+# print()
+# key = input("Please enter 'Y' to delete sample previews: ")
+# if key.upper() == 'Y':
+#     print("Clearing all previews.")
+#     MOption['sample_for_preview'].clear()
+#     isModified = True
 
 print()
 print("Press any key to next step...")
@@ -82,7 +78,10 @@ while True:
     # print(MOption['options'])
 
     # 分行逐个打印参数。
-    os.system('cls') 
+    if platform.platform(True, True)[0:3].lower() == "win":
+        os.system('cls')
+    else:
+        os.system('clear')
     print("["+DFLModelOptionF+"]")
     print()
     print(str(" model info ").center(53,"*"))
