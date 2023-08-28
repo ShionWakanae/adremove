@@ -15,7 +15,7 @@ if len(sys.argv) < 2:
     m={}
     for filename in os.listdir(modelPath):
         # print("["+filename+"]")
-        if filename.endswith(".dat"):
+        if filename.endswith("_options.dat") or filename.endswith("_data.dat"):
             m[str(i)]=filename
             # print(i," = "+m[i])
             i=i+1
@@ -54,21 +54,26 @@ MOption = pickle.loads(MContent)
 
 isModified = False
 
-key = input("Please enter 'Y' to delete loss history and set iteration to 1: ")
-if key.upper() == 'Y':
-    print("Clearing loss history.")
-    MOption['loss_history'].clear()
-    print("Resetting iteration to 1.")
-    MOption['iter'] = 1
-    isModified = True
+if 'loss_history' in MOption:
+    key = input("Please enter 'Y' to delete loss history and set iteration to 1: ")
+    if key.upper() == 'Y':
+        print("Clearing loss history.")
+        MOption['loss_history'].clear()
+        if 'iter' in MOption:
+            print("Resetting iteration to 1.")
+            MOption['iter'] = 1
+        isModified = True
+
+if 'sample_for_preview' in MOption:
+    print()
+    key = input("Please enter 'Y' to delete sample previews: ")
+    if key.upper() == 'Y':
+        print("Clearing all previews.")
+        MOption['sample_for_preview'].clear()
+        isModified = True
 
 # print()
-# key = input("Please enter 'Y' to delete sample previews: ")
-# if key.upper() == 'Y':
-#     print("Clearing all previews.")
-#     MOption['sample_for_preview'].clear()
-#     isModified = True
-
+# print(MOption)
 print()
 print("Press any key to next step...")
 input()
@@ -84,53 +89,61 @@ while True:
         os.system('clear')
     print("["+DFLModelOptionF+"]")
     print()
-    print(str(" model info ").center(53,"*"))
-    print()
-    print(str("iteration").rjust(25), "=" , str(MOption['iter']).ljust(15))
-    print()
-    print(str(" model params ").center(53,"*"))
-    for oneOp in MOption['options']:
-        print(str(oneOp).rjust(25), "=" , str(MOption['options'][oneOp]).ljust(15)) #, type(MOption['options'][oneOp]))
-    print()
-    print(str("*******").center(53,"*"))
-    print()
-
-    key=''
-    print("Input a existing param name to modify. or a new param name to add. Input 'quit' to save quit.")
-    print("then input param value, if ' ' means to delete.")
-    print()
-    key = input("Please input param name: ")
-    if key == 'quit' or key =='\26':
-        break
-    elif key.strip() == '':
-        continue
-    else:
-        content = input("Please input param value: ")
+    if 'iter' in MOption:
+        print(str(" model info ").center(53,"*"))
         print()
-    if content == ' ':
-        del MOption['options'][key]
-        isModified = True
-    else:
-        try:
-            intcontent = int(content)
-            MOption['options'][key] = intcontent
-            print(key+" is set to INTEGER value =",intcontent)
-        except:
+        print(str("iteration").rjust(25), "=" , str(MOption['iter']).ljust(15))
+        print()
+    if 'options' in MOption:
+        print(str(" model params ").center(53,"*"))
+        for oneOp in MOption['options']:
+            print(str(oneOp).rjust(25), "=" , str(MOption['options'][oneOp]).ljust(15)) #, type(MOption['options'][oneOp]))
+        print()
+        print(str("*******").center(53,"*"))
+        print()
+
+        key=''
+        print("Input a existing param name to modify. or a new param name to add. Input 'quit' to save quit.")
+        print("then input param value, if ' ' means to delete.")
+        print()
+        key = input("Please input param name: ")
+        if key == 'quit' or key =='\26':
+            break
+        elif key.strip() == '':
+            continue
+        else:
+            content = input("Please input param value: ")
+            print()
+        if content == ' ':
+            del MOption['options'][key]
+            isModified = True
+        else:
             try:
-                fcontent = float(content)
-                MOption['options'][key] = fcontent
-                print(key+" is set to FLOAT value =",fcontent)
+                intcontent = int(content)
+                MOption['options'][key] = intcontent
+                print(key+" is set to INTEGER value =",intcontent)
             except:
                 try:
-                    bcontent = bool(strtobool(content))
-                    MOption['options'][key] = bcontent
-                    print(key+" is set to BOOL value =",bcontent)
+                    fcontent = float(content)
+                    MOption['options'][key] = fcontent
+                    print(key+" is set to FLOAT value =",fcontent)
                 except:
-                    MOption['options'][key] = content
-                    print(key+" is set to STRING value =",content)
-        print("Press any key to choose param...")
-        input()
-        isModified = True
+                    try:
+                        bcontent = bool(strtobool(content))
+                        MOption['options'][key] = bcontent
+                        print(key+" is set to BOOL value =",bcontent)
+                    except:
+                        MOption['options'][key] = content
+                        print(key+" is set to STRING value =",content)
+            print("Press any key to choose param...")
+            input()
+            isModified = True
+    else:
+        print("No option found in file...")
+        print()
+        print(MOption)
+        print()
+        break
 
 if isModified:
     print("now saving...")
