@@ -7,6 +7,10 @@ import sys
 
 print()
 modelPath="..\\..\\workspace\\model\\"
+wsPath = os.environ.get("WORKSPACE")
+if wsPath != "":
+    modelPath=wsPath+"\\model\\"
+
 DFLModelOptionF = ""
 if len(sys.argv) < 2:
     # print("Error! need a model file name!")
@@ -115,29 +119,33 @@ while True:
             content = input("Please input param value: ")
             print()
         if content == ' ':
-            del MOption['options'][key]
-            isModified = True
+            if key in MOption['options']:
+                del MOption['options'][key]
+                print("["+key+"] is deleted.")
+                isModified = True
+            else:
+                print("["+key+"] is not found to delete!")
         else:
             try:
                 intcontent = int(content)
                 MOption['options'][key] = intcontent
-                print(key+" is set to INTEGER value =",intcontent)
+                print("["+key+"] is set to INTEGER value =",intcontent)
             except:
                 try:
                     fcontent = float(content)
                     MOption['options'][key] = fcontent
-                    print(key+" is set to FLOAT value =",fcontent)
+                    print("["+key+"]  is set to FLOAT value =",fcontent)
                 except:
                     try:
                         bcontent = bool(strtobool(content))
                         MOption['options'][key] = bcontent
-                        print(key+" is set to BOOL value =",bcontent)
+                        print("["+key+"] is set to BOOL value =",bcontent)
                     except:
                         MOption['options'][key] = content
-                        print(key+" is set to STRING value =",content)
-            print("Press any key to choose param...")
-            input()
+                        print("["+key+"] is set to STRING value =",content)
             isModified = True
+        print("Press any key to choose next param...")
+        input()
     else:
         print("No option found in file...")
         print()
