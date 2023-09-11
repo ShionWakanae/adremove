@@ -88,8 +88,8 @@ if 'sample_for_preview' in MOption:
         MOption['sample_for_preview'].clear()
         isModified = True
 
-print()
-print(MOption)
+# print()
+# print(MOption)
 print()
 print("Press any key to next step...")
 input()
