@@ -11,6 +11,10 @@ wsPath = os.environ.get("WORKSPACE")
 if wsPath != "":
     modelPath=wsPath+"\\model\\"
 
+dflPath = os.environ.get("DFL_ROOT")
+if dflPath != "":
+    sys.path.append(dflPath)
+
 DFLModelOptionF = ""
 if len(sys.argv) < 2:
     # print("Error! need a model file name!")
@@ -19,13 +23,14 @@ if len(sys.argv) < 2:
     m={}
     for filename in os.listdir(modelPath):
         # print("["+filename+"]")
-        if filename.endswith("_options.dat") or filename.endswith("_data.dat"):
+        if filename.endswith(".dat"):
             m[str(i)]=filename
             # print(i," = "+m[i])
             i=i+1
     
     if len(m) == 0:
         print("no model option file found, quit.")
+        print()
         sys.exit(-1)
 
     print("!!! Please backup your model first !!!")
@@ -42,6 +47,7 @@ if len(sys.argv) < 2:
     print()
     if not key in m:
         print("not a choice, quit.")
+        print()
         sys.exit(-1)
 
     DFLModelOptionF = os.path.abspath(modelPath+m[key])
@@ -50,13 +56,19 @@ else:
     DFLModelOptionF = os.path.abspath(modelPath+sys.argv[1])
 
 if not Path(DFLModelOptionF).exists:
-    print("Error! model file is not found!")
+    print("Error! model option file is not found!")
+    print()
     sys.exit(-1)
 
 MContent = Path(DFLModelOptionF).read_bytes()
 MOption = pickle.loads(MContent)
 
 isModified = False
+
+if ('frames' in MOption) and ('frames' in MOption) and ('frames' in MOption):
+    print("Error! this is merge option file!")
+    print()
+    sys.exit(-1)    
 
 if 'loss_history' in MOption:
     key = input("Please enter 'Y' to delete loss history and set iteration to 1: ")
@@ -76,8 +88,8 @@ if 'sample_for_preview' in MOption:
         MOption['sample_for_preview'].clear()
         isModified = True
 
-# print()
-# print(MOption)
+print()
+print(MOption)
 print()
 print("Press any key to next step...")
 input()
